@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.wifihi.persistance">
+	<class
+		name="User"
+		table="user"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="java.lang.Long"
+			column="UserID"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="PhoneNumber"
+			column="PhoneNumber"
+			type="string"
+			not-null="true"
+			length="20"
+		/>
+		<property
+			name="QQNumber"
+			column="QQNumber"
+			type="java.lang.Long"
+			not-null="false"
+			length="19"
+		/>
+		<property
+			name="UserName"
+			column="UserName"
+			type="string"
+			not-null="false"
+			length="30"
+		/>
+		<property
+			name="RegistrateDate"
+			column="RegistrateDate"
+			type="date"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="RegistrateTime"
+			column="RegistrateTime"
+			type="time"
+			not-null="false"
+			length="8"
+		/>
+		<property
+			name="Password"
+			column="Password"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+	
+
+		<set name="Uservisitingsystemhistories" inverse="true">
+			<key column="UserID"/>
+			<one-to-many class="Uservisitingsystemhistory"/>
+		</set>
+
+		<set name="Ordermanages" inverse="true">
+			<key column="UserID"/>
+			<one-to-many class="Ordermanage"/>
+		</set>
+
+		<set name="Userwifivisitinghistories" inverse="true">
+			<key column="UserID"/>
+			<one-to-many class="Userwifivisitinghistory"/>
+		</set>
+
+
+	</class>	
+</hibernate-mapping>

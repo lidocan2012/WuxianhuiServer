@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.wifihi.persistance">
+	<class
+		name="Orderdetail"
+		table="orderdetail"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="java.lang.Long"
+			column="DetailID"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="Number"
+			column="Number"
+			type="integer"
+			not-null="true"
+			length="10"
+		/>
+		<many-to-one
+			name="GoodsID"
+			column="GoodsID"
+			class="Goodsmanage"
+			not-null="false"
+		>
+		</many-to-one>
+		<many-to-one
+			name="Order"
+			column="OrderId"
+			class="Ordermanage"
+			not-null="false"
+		>
+		</many-to-one>
+		<many-to-one
+			name="WSPUser"
+			column="WSPUser"
+			class="Wspuser"
+			not-null="false"
+		>
+		</many-to-one>
+	
+
+		<set name="Goodsmanages" inverse="true">
+			<key column="DetailID"/>
+			<one-to-many class="Goodsmanage"/>
+		</set>
+
+
+	</class>	
+</hibernate-mapping>

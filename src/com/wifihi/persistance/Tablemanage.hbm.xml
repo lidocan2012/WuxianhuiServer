@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.wifihi.persistance">
+	<class
+		name="Tablemanage"
+		table="tablemanage"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="java.lang.Long"
+			column="TableID"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="Extends"
+			column="Extends"
+			type="string"
+			not-null="false"
+		/>
+		<many-to-one
+			name="WSPUser"
+			column="WSPUser"
+			class="Wspuser"
+			not-null="false"
+		>
+		</many-to-one>
+	
+
+		<set name="Ordermanages" inverse="true">
+			<key column="TableID"/>
+			<one-to-many class="Ordermanage"/>
+		</set>
+
+
+	</class>	
+</hibernate-mapping>

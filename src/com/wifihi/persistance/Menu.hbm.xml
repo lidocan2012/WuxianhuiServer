@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.wifihi.persistance">
+	<class
+		name="Menu"
+		table="menu"
+	>
+		<meta attribute="sync-DAO">false</meta>
+		<id
+			name="Id"
+			type="java.lang.Long"
+			column="MenuID"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="MenuName"
+			column="MenuName"
+			type="string"
+			not-null="true"
+			length="20"
+		/>
+		<property
+			name="Addr"
+			column="Addr"
+			type="string"
+			not-null="false"
+			length="50"
+		/>
+		<property
+			name="ParentID"
+			column="ParentID"
+			type="java.lang.Long"
+			not-null="false"
+			length="19"
+		/>
+	
+		<set
+			name="Wspusers"
+			table="menuuser"
+			cascade="all"
+		>
+			<key column="MenuID"/>
+			<many-to-many column="WSPUser" class="Wspuser"/>
+		</set>
+
+
+	</class>	
+</hibernate-mapping>
