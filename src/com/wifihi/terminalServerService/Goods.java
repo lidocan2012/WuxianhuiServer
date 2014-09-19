@@ -1,10 +1,17 @@
 package com.wifihi.terminalServerService;
 
 public class Goods {
+	Long goodsId = 0L;
 	String goodsType="";
 	String goodsName="";
 	double price=0.0;
 	String imageUrl="";
+	public Long getGoodsId() {
+		return goodsId;
+	}
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
+	}
 	public String getGoodsType() {
 		return goodsType;
 	}

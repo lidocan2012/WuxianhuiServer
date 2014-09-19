@@ -2,8 +2,6 @@ package com.wifihi.persistance;
 
 import com.wifihi.persistance.base.BaseOrdermanage;
 
-
-
 public class Ordermanage extends BaseOrdermanage {
 	private static final long serialVersionUID = 1L;
 

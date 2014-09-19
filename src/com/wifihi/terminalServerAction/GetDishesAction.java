@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import com.opensymphony.xwork2.ActionSupport;
 import com.wifihi.persistance.Goodsmanage;
 import com.wifihi.persistance.HibernateSessionFactory;
-import com.wifihi.persistance.Wspuser;
 import com.wifihi.terminalServerService.Goods;
 
 public class GetDishesAction extends ActionSupport implements ServletRequestAware{
@@ -52,6 +51,7 @@ public class GetDishesAction extends ActionSupport implements ServletRequestAwar
 				goods.setGoodsName(goodsmanage.getGoodsName());
 				goods.setImageUrl(goodsmanage.getPicture());
 				goods.setPrice(goodsmanage.getPrice().doubleValue());
+				goods.setGoodsId(goodsmanage.getId());
 				goodsList.add(goods);
 			}
 		}catch(Exception e){

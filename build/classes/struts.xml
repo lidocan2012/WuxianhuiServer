@@ -43,6 +43,11 @@
 			<result name="success" type="json">
 				<param name="root">goodsList</param>
 			</result>
+		</action> 
+		<action name="handleCommitOrders" class="com.wifihi.terminalServerAction.HandleCommitOrdersAction" method="handleCommitOrders">
+			<result name="success" type="json">
+				<param name="root">goodsList</param>
+			</result>
 		</action>
 	</package>
 </struts>
