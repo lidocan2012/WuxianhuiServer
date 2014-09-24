@@ -8,7 +8,7 @@
 		name="Wifimanage"
 		table="wifimanage"
 	>
-		<meta attribute="sync-DAO">false</meta>
+		<meta attribute="sync-DAO">true</meta>
 		<id
 			name="Id"
 			type="java.lang.Long"

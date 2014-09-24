@@ -48,6 +48,11 @@
 			<result name="success" type="json">
 				<param name="root">goodsList</param>
 			</result>
-		</action>
+		</action> 
+		<action name="WspLogin" class="com.wifihi.terminalServerAction.WspLoginAction" method="wspLoginCheck">
+			<result name="success" type="json">
+				<param name="root">id</param>
+			</result>
+		</action> 
 	</package>
 </struts>

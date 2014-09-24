@@ -27,6 +27,7 @@ public abstract class BaseWspuser  implements Serializable {
 	public static String PROP_EMAIL = "Email";
 	public static String PROP_DISTRICT = "District";
 	public static String PROP_SHOWINFO = "Showinfo";
+	public static String PROP_RID = "Rid";
 	public static String PROP_Q_Q_NUMBER = "QQNumber";
 	public static String PROP_ID = "Id";
 	public static String PROP_REGISTRATE_DATE = "RegistrateDate";
@@ -81,6 +82,7 @@ public abstract class BaseWspuser  implements Serializable {
 	private java.lang.String password;
 	private java.lang.String businessType;
 	private java.lang.String showinfo;
+	private java.lang.String rid;
 
 	// collections
 	private java.util.Set<com.wifihi.persistance.Goodsmanage> goodsmanages;
@@ -349,6 +351,23 @@ public abstract class BaseWspuser  implements Serializable {
 	 */
 	public void setShowinfo (java.lang.String showinfo) {
 		this.showinfo = showinfo;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: RID
+	 */
+	public java.lang.String getRid () {
+		return rid;
+	}
+
+	/**
+	 * Set the value related to the column: RID
+	 * @param rid the RID value
+	 */
+	public void setRid (java.lang.String rid) {
+		this.rid = rid;
 	}
 
 

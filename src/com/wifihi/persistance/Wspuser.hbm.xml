@@ -113,6 +113,13 @@
 			not-null="false"
 			length="100"
 		/>
+		<property
+			name="Rid"
+			column="RID"
+			type="string"
+			not-null="false"
+			length="45"
+		/>
 	
 
 		<set name="Goodsmanages" inverse="true">

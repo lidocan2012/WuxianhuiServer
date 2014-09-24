@@ -13,46 +13,131 @@ import org.hibernate.cfg.Configuration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import cn.jpush.api.JPushClient;
+import cn.jpush.api.common.APIConnectionException;
+import cn.jpush.api.common.APIRequestException;
+import cn.jpush.api.push.PushResult;
+import cn.jpush.api.push.model.Message;
+import cn.jpush.api.push.model.Platform;
+import cn.jpush.api.push.model.PushPayload;
+import cn.jpush.api.push.model.audience.Audience;
+import cn.jpush.api.push.model.notification.Notification;
+
 import com.opensymphony.xwork2.ActionSupport;
+import com.wifihi.persistance.HibernateSessionFactory;
 import com.wifihi.persistance.Wifimanage;
 import com.wifihi.persistance.Wspuser;
+import com.wifihi.terminalServerService.IDString;
+//import com.wifihi.persistence.wspu;
 import com.wifihi.terminalServerService.Wifi;
 
 public class WifiAction extends ActionSupport implements ServletRequestAware{
 	private static final long serialVersionUID = 1L;
 	private String reqContent = null;
-	private Wifi wifi;  //·µ»ØpasswdµÄ
-	private List<Wifi> wifiList = new ArrayList<Wifi>(); //·µ»ØµÄList
-	//¼øÈ¨
+	private Wifi wifi;  //è¿”å›passwdçš„
+	private List<Wifi> wifiList = new ArrayList<Wifi>(); //è¿”å›çš„List
+	private IDString id;
+	
+	//é‰´æƒ
+	private static final String appKey="63bf6dbe60ad541c4c83d155";
+	private static final String masterSecret="df5fafb42ab511848d9c4f3d";
+	private static int timeToLive =  60 * 60 * 24; 
+	public static final String ALERT = "é‰´æƒ";
+	public  JPushClient jpush= null;
+	private String passwd="";
+	//public static final String MSG_CONTENT ="";
+	public String WspAuthorise() throws APIConnectionException, APIRequestException
+	{
+		JSONObject json = new JSONObject(this.reqContent);
+		JPushClient jpush= null;
+		String result = json.getString("result");
+		String mac = json.getString("mac");
+		String WifiRID = json.getString("WifiRID");
+		if(result.equals("agree"))
+		{
+			SessionFactory sf = HibernateSessionFactory.getSessionFactory();
+			Session session = sf.openSession();//åŒæ„æˆæƒï¼Œå…è®¸wifiç”¨æˆ·è¿æ¥wifi
+			IDString	id = new IDString();
+			Wifimanage macAdd = new Wifimanage();
+			session.beginTransaction();
+			Query q = session.createQuery("from Wifimanage  where MacAddress like :mac");
+			q.setParameter("mac", mac);
+			macAdd = (Wifimanage)q.uniqueResult();
+			
+			passwd = macAdd.getPassword();
+			System.out.println("åŒæ„");
+		}
+		else{
+			//æ‹’æ¥æˆæƒï¼Œä¸å…è®¸ç”¨æˆ· è¿æ¥wifi
+		    passwd= "";
+		    System.out.println("æ‹’ç»");
+		    
+		}
+		jpush = new JPushClient(masterSecret, appKey, timeToLive); 
+		System.out.println("åˆ›å»ºJPush");
+		System.out.println("å¯†ç ï¼š"+passwd);
+		PushPayload payload = buildPushObject_all_all_alert(WifiRID,passwd);
+		System.out.println("å³å°†æ¨é€");
+		PushResult result1 = jpush.sendPush(payload);//å‘RgisterIDä¸ºRIDçš„wifiå®¢æˆ·ç«¯æ¨é€æ¶ˆæ¯
+		
+		System.out.println(result1);
+		id.setId("10001");//æ¶ˆæ¯æ¨é€æˆåŠŸ
+		//å”¤é†’rtnAuthorise()è¿›ç¨‹
+		return SUCCESS;
+		
+	}
 	public String rtnAuthorise(){
 		JSONObject json = new JSONObject(this.reqContent);
 		String mac = json.getString("mac");
-		
-		Configuration conf = new Configuration().configure();
-		SessionFactory sf = conf.buildSessionFactory();
+		String username =json.getString("username");
+		String wifiRID = json.getString("WifiRID");
+		//Configuration conf = new Configuration().configure();
+		SessionFactory sf = HibernateSessionFactory.getSessionFactory();
 		Session session = sf.openSession();
 		wifi = new Wifi();
 		Wifimanage macAdd = new Wifimanage();
 		try{
 				session.beginTransaction();
 				Query q = session.createQuery("from Wifimanage  where MacAddress like :mac");
-				q.setParameter("mac", mac);
+				q.setParameter("mac", "%"+mac+"%");
 				macAdd = (Wifimanage)q.uniqueResult();
 				if(macAdd!=null){
-					if(macAdd.getAuthorise()==false)
+					if(macAdd.isAuthorise()==false)
 					{
 						wifi.setWifiname(macAdd.getWifiName());
 						wifi.setPasswd(macAdd.getPassword());
-						wifi.setAuthorise(macAdd.getAuthorise());
+						wifi.setAuthorise(macAdd.isAuthorise());
 					}
-					else
-					{
+					else{ 
+						String hqlwsp = "from Wspuser  where wspuser = :wspid";
+						Wspuser wspuser = new Wspuser(); 
+						q = session.createQuery(hqlwsp);
+						q.setParameter("wspid",macAdd.getWSPUser().getId());
+						wspuser = (Wspuser)q.uniqueResult();
+						String RID = wspuser.getRid();
+						System.out.println("å‘WSPRIDä¸ºï¼š"+RID);
+						StringBuilder msg= new StringBuilder();
+						msg.append(username+","+mac+","+wifiRID);
+						System.out.println("msgï¼š"+msg.toString());
+					
+					
+						jpush = new JPushClient(masterSecret, appKey, timeToLive); 
+						System.out.println("1");
+						PushPayload payload = buildPushObject_all_all_alert(RID,msg.toString());
+						System.out.println("2");
+						PushResult result = jpush.sendPush(payload);//å‘æ³¨å†Œidä¸ºRIDçš„WSPå®¢æˆ·ç«¯æ¨é€æ¶ˆæ¯
+						System.out.println(result);
+						
+						
+						//çº¿ç¨‹é˜»å¡ï¼Œç­‰å¾…WSPå®¢æˆ·ç«¯çš„HTTPè¯·æ±‚å‘æ¥çš„ä¿¡æ¯ï¼Œç”±WSPAuthorise()å”¤é†’
+						
+					
 						wifi.setWifiname(macAdd.getWifiName());
 						wifi.setPasswd("");
-						wifi.setAuthorise(macAdd.getAuthorise());
-					}
-					
+						wifi.setAuthorise(macAdd.isAuthorise());
 				}
+				
+			}
 				
 		}catch(Exception e){
 			e.printStackTrace();
@@ -61,11 +146,19 @@ public class WifiAction extends ActionSupport implements ServletRequestAware{
 		return SUCCESS;
 	}
 
-    //·µ»ØÓÃ»§ÃûÃÜÂë
+	public PushPayload buildPushObject_all_all_alert(String registrationId,String MSG_CONTENT) {
+		return PushPayload.newBuilder()
+				.setPlatform(Platform.all())
+				.setAudience(Audience.registrationId(registrationId))
+			.setMessage(Message.newBuilder().setMsgContent(MSG_CONTENT)					
+					.build())
+				.build();
+	}
+    //è¿”å›ç”¨æˆ·åå¯†ç 
 	public String rtnWifi(){
 		JSONObject json = new JSONObject(this.reqContent);
 		String mac = json.getString("mac");
-		String hql = "from Wifimanage w where w.MacAddress=:mac";
+		String hql = "from Wifimanage where MacAddress like :mac";
 		String hqlwsp = "from Wspuser  where wspuser = :wspid";
 
 		Configuration conf = new Configuration().configure();
@@ -77,19 +170,18 @@ public class WifiAction extends ActionSupport implements ServletRequestAware{
 		try{
 				session.beginTransaction();
 				Query q = session.createQuery(hql);
-				q.setParameter("mac", mac);
+				q.setParameter("mac", "%"+mac+"%");
 				macAdd = (Wifimanage)q.uniqueResult();
-				if(macAdd!=null)
-					{
-				wifi.setMac(mac); 
-				//wifi.setPasswd(macAdd.getPassword());
-				wifi.setDisplayname(macAdd.getDisplayName().toString());
-				q = session.createQuery(hqlwsp);
-				q.setParameter("wspid", macAdd.getWspuser().getWspuser());
-				System.out.println("wspid:"+macAdd.getWspuser().getWspuser());
-				wspuser = (Wspuser)q.uniqueResult();
-				wifi.setWspusername(wspuser.getUserName());
-					}
+				if(macAdd!=null){
+					wifi.setMac(mac); 
+					//wifi.setPasswd(macAdd.getPassword());
+					wifi.setDisplayname(macAdd.getDisplayName().toString());
+					q = session.createQuery(hqlwsp);
+					q.setParameter("wspid", macAdd.getWSPUser().getId());
+					System.out.println("wspid:"+macAdd.getWSPUser().getId());
+					wspuser = (Wspuser)q.uniqueResult();
+					wifi.setWspusername(wspuser.getUserName());
+				}
 				else
 					wifi.setPasswd("err10004");
 			}catch(Exception e){
@@ -106,45 +198,47 @@ public class WifiAction extends ActionSupport implements ServletRequestAware{
 		for(int i = 0; i < jsonArray.length(); i++){
 			macs[i] = jsonArray.getJSONObject(i).getString("mac"); 
 		}
-		//½¨Á¢Á¬½Ó
-		Configuration conf = new Configuration().configure();
-		SessionFactory sf = conf.buildSessionFactory();
+		//å»ºç«‹è¿æ¥
+		System.out.println("jsonarray:"+jsonArray.toString());
+		//Configuration conf = new Configuration().configure();
+		//SessionFactory sf = conf.buildSessionFactory();
+		SessionFactory sf = HibernateSessionFactory.getSessionFactory();
 		Session session = sf.openSession();
 		
-		String hql = "from Wifimanage  where macaddress like :mac"; //Çø·Ö´óĞ¡Ğ´
-		String hqlwsp = "from Wspuser  where wspuser = :wspid";
-		Wifimanage maci = new Wifimanage();   //²éÑ¯Ê±Ê¹ÓÃ
+		String hql = "from Wifimanage  where MACAddress like :mac"; //åŒºåˆ†å¤§å°å†™
+		//String hqlwsp = "from Wspuser  where wspuser = :wspid";
+		String hqlwsp = "from Wspuser  where wspuser =:wspid";
+		Wifimanage maci = new Wifimanage();   //æŸ¥è¯¢æ—¶ä½¿ç”¨
 		
-		Wspuser wspuser = new Wspuser();             //Ìí¼Ó¶ÔÏó
+		Wspuser wspuser = new Wspuser();             //æ·»åŠ å¯¹è±¡
 		
 		for(int i = 0; i < macs.length; i++){
 			try{
 				Wifi wifii = new Wifi(); 
 				session.beginTransaction();
-				Query q = session.createQuery(hql); //²éÕÒ
-				q.setParameter("mac", macs[i]);
-				maci = (Wifimanage) q.uniqueResult(); //»ñÈ¡µ±Ç°¶ÔÏó
-				if(maci==null)continue;               //ÈôÎª¿ÕÔò¼ÌĞø
-				else
-					{
+				Query q = session.createQuery(hql); //æŸ¥æ‰¾
+				q.setParameter("mac", "%"+macs[i]+"%");
+			  	maci = (Wifimanage) q.uniqueResult(); //è·å–å½“å‰å¯¹è±¡
+				if(maci==null) continue;               //è‹¥ä¸ºç©ºåˆ™ç»§ç»­
+				else{
 					wifii.setMac(macs[i]); 
-				//ÉèÖÃ¸Ãmac
-				wifii.setWifiname(maci.getWifiName().toString());
-				wifii.setDisplayname(maci.getDisplayName().toString());
-				q = session.createQuery(hqlwsp);
-				q.setParameter("wspid", maci.getWspuser().getWspuser());
-				System.out.println("wspid:"+maci.getWspuser().getWspuser());
-				wspuser = (Wspuser)q.uniqueResult();
-				wifii.setWspusername(wspuser.getUserName());
+					//è®¾ç½®è¯¥mac
+					wifii.setWifiname(maci.getWifiName().toString());
+					wifii.setDisplayname(maci.getDisplayName().toString());
+					q = session.createQuery(hqlwsp);
+					q.setParameter("wspid", maci.getWSPUser().getId());
+					System.out.println("wspid:"+maci.getWSPUser().getId());
+					wspuser = (Wspuser)q.uniqueResult();
+					wifii.setWspusername(wspuser.getUserName());
 					wifiList.add(wifii);
 					System.out.println("wifiList:"+wifiList.toString());
 					System.out.println("wifii"+wifii.toString());
-					}//Ìí¼Ówifii¶ÔÏó
+				}//æ·»åŠ wifiiå¯¹è±¡
 			}catch(Exception e){
 				session.getTransaction().rollback();
 			}
 			finally{
-				//session.close();//Èç¹ûÓÃc3p0ºÃÏñ²»ÓÃ¹Ø±Õ..
+				//session.close();//å¦‚æœç”¨c3p0å¥½åƒä¸ç”¨å…³é—­..
 			}
 		}
 		System.out.println("wifiList:"+wifiList.toString());
@@ -153,8 +247,8 @@ public class WifiAction extends ActionSupport implements ServletRequestAware{
 	
 	@Override
 	public void setServletRequest(HttpServletRequest arg0) {
-		this.reqContent = GetRequestAction.getJsonContent(arg0);;
-		System.out.println("reqContent: " + reqContent);//¶à¸öjson¶ÔÏó
+		this.reqContent = GetRequestAction.getJsonContent(arg0);
+		System.out.println("reqContent: " + reqContent);//å¤šä¸ªjsonå¯¹è±¡
 	}
 	public Wifi getWifi() {
 		return wifi;
@@ -173,5 +267,14 @@ public class WifiAction extends ActionSupport implements ServletRequestAware{
 	public void setWifi(List<Wifi> wifiList) {
 		this.wifiList = wifiList;
 	}
-	
+	public IDString getId()
+	{
+		return this.id;
+	}
+	public void setId(IDString id)
+	{
+		this.id = id;
+		
+
+	}
 }
