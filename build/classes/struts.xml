@@ -53,6 +53,11 @@
 			<result name="success" type="json">
 				<param name="root">id</param>
 			</result>
-		</action> 
+		</action>
+		<action name="WspAuthorise" class="com.wifihi.terminalServerAction.WifiAction" method="WspAuthorise">
+			<result name="success" type="json">
+				<param name="root">id</param>
+			</result>
+		 </action> 
 	</package>
 </struts>

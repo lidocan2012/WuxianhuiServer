@@ -61,7 +61,7 @@ public class WifiAction extends ActionSupport implements ServletRequestAware{
 			Wifimanage macAdd = new Wifimanage();
 			session.beginTransaction();
 			Query q = session.createQuery("from Wifimanage  where MacAddress like :mac");
-			q.setParameter("mac", mac);
+			q.setParameter("mac", "%"+mac+"%");
 			macAdd = (Wifimanage)q.uniqueResult();
 			
 			passwd = macAdd.getPassword();
@@ -150,7 +150,7 @@ public class WifiAction extends ActionSupport implements ServletRequestAware{
 		return PushPayload.newBuilder()
 				.setPlatform(Platform.all())
 				.setAudience(Audience.registrationId(registrationId))
-			.setMessage(Message.newBuilder().setMsgContent(MSG_CONTENT)					
+			.setMessage(Message.newBuilder().setMsgContent(MSG_CONTENT)
 					.build())
 				.build();
 	}
