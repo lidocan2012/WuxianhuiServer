@@ -13,6 +13,7 @@ public class Wifi implements Serializable{
 	private String wifiname;
 	private String wspusername;
 	private String displayname;
+	private long wspId;
 	
 	public String getWspusername() {
 		return wspusername;
@@ -29,10 +30,6 @@ public class Wifi implements Serializable{
 	public void setDisplayname(String displayname) {
 		this.displayname = displayname;
 	}
-
-
-
-	
 
 	public String getWifiname() {
 		return wifiname;
@@ -73,6 +70,14 @@ public class Wifi implements Serializable{
 		// TODO Auto-generated method stub
 		return "Wifi["+this.wspusername+","+this.wifiname+","+this.mac+","+this.passwd+","+this.Authorise+"'"+this.displayname+"]";
 		
+	}
+
+	public long getWspId() {
+		return wspId;
+	}
+
+	public void setWspId(long wspId) {
+		this.wspId = wspId;
 	}
 
 }

@@ -34,12 +34,12 @@ public class GetDishesAction extends ActionSupport implements ServletRequestAwar
 	public String getDishes(){
 		SessionFactory sf = HibernateSessionFactory.getSessionFactory();
 		JSONObject json = new JSONObject(this.reqContent);
-		String wspid=json.getString("wspid");
+		long wspid=json.getLong("wspid");
 		Session session = sf.openSession();
 		try{
 			session.beginTransaction();
 			Query q = session.createQuery("from Goodsmanage where wspuser=:wspid"); 
-			q.setParameter("wspid",Long.parseLong(wspid));
+			q.setParameter("wspid",wspid);
 			List<Goodsmanage> goodsManages = (List<Goodsmanage>) q.list();
 			if(goodsManages==null){
 				System.out.println("error");

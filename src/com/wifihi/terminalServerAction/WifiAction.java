@@ -181,6 +181,7 @@ public class WifiAction extends ActionSupport implements ServletRequestAware{
 					System.out.println("wspid:"+macAdd.getWSPUser().getId());
 					wspuser = (Wspuser)q.uniqueResult();
 					wifi.setWspusername(wspuser.getUserName());
+					wifi.setWspId(wspuser.getId());
 				}
 				else
 					wifi.setPasswd("err10004");
@@ -230,6 +231,7 @@ public class WifiAction extends ActionSupport implements ServletRequestAware{
 					System.out.println("wspid:"+maci.getWSPUser().getId());
 					wspuser = (Wspuser)q.uniqueResult();
 					wifii.setWspusername(wspuser.getUserName());
+					wifii.setWspId(wspuser.getId());
 					wifiList.add(wifii);
 					System.out.println("wifiList:"+wifiList.toString());
 					System.out.println("wifii"+wifii.toString());
@@ -257,9 +259,6 @@ public class WifiAction extends ActionSupport implements ServletRequestAware{
 	public void setWifi(Wifi wifi) {
 		this.wifi = wifi;
 	}
-
-	
-	
 	public List<Wifi> getWifiList() {
 		return wifiList;
 	}

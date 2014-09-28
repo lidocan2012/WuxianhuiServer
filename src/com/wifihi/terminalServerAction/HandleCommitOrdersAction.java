@@ -39,8 +39,8 @@ public class HandleCommitOrdersAction extends ActionSupport implements ServletRe
 		try{
 			Date date = new Date();
 			String tableId = json.getString("tableId");
-			String userId = json.getString("userId");
-			String wspId = json.getString("wspId");
+			long userId = json.getLong("userId");
+			long wspId = json.getLong("wspId");
 			double totalSum = json.getDouble("totalSum");
 			JSONArray goodsIdArray = json.getJSONArray("goodsIdArray");
 			JSONArray numberArray = json.getJSONArray("numberArray");
@@ -48,9 +48,9 @@ public class HandleCommitOrdersAction extends ActionSupport implements ServletRe
 			Ordermanage orderManage = new Ordermanage();
 			
 			
-			User user = new User(Long.parseLong(userId));
+			User user = new User(userId);
 			orderManage.setUserID(user);
-			Wspuser wspUser = new Wspuser(Long.parseLong(wspId));
+			Wspuser wspUser = new Wspuser(wspId);
 			orderManage.setWSPUser(wspUser);
 			Tablemanage tableManage = new Tablemanage(Long.parseLong(tableId));
 			orderManage.setTableID(tableManage);
@@ -63,7 +63,7 @@ public class HandleCommitOrdersAction extends ActionSupport implements ServletRe
 				orderDetailSet = new HashSet<Orderdetail>();
 			}
 			orderManage.setExpenditure(new BigDecimal(totalSum));
-			orderManage.setStatus("Î´½áÕË");
+			orderManage.setStatus("Î´ï¿½ï¿½ï¿½ï¿½");
 			
 			for(int i=0;i<goodsIdArray.length();i++){
 				Orderdetail orderDetail = new Orderdetail();

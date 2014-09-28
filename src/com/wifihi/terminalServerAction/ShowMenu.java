@@ -39,14 +39,14 @@ public class ShowMenu extends ActionSupport implements ServletRequestAware{
 		SessionFactory sf = conf.buildSessionFactory();
 	
 		JSONObject json = new JSONObject(this.reqContent);
-		String wspid = json.getString("wspid");
+		long wspid = json.getLong("wspid");
 		Wspuser wspuser = new Wspuser();
 		info = new WspShowInfo();
 		Session session = sf.openSession();
 		try{
 			session.beginTransaction();
 			Query q = session.createQuery("from Wspuser where wspuser=:wspid"); 
-			q.setParameter("wspid",Long.parseLong(wspid));
+			q.setParameter("wspid",wspid);
 			wspuser = (Wspuser) q.uniqueResult();
 			if(wspuser==null){
 				info.setInfo("error");

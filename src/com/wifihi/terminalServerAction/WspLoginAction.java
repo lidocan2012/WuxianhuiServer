@@ -42,7 +42,7 @@ public String wspLoginCheck()
      try
      {
     	 Transaction trans = session.beginTransaction();
-    	 Query q = session.createQuery("from Wspuser where userName=:userName");
+    	 Query q = session.createQuery("from Wspuser where UserName=:userName");
     	 q.setParameter("userName", wspname);
     	 wspuser =(Wspuser) q.uniqueResult();
     	 if(wspuser==null)
