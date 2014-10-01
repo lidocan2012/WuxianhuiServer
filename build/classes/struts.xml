@@ -58,6 +58,11 @@
 			<result name="success" type="json">
 				<param name="root">id</param>
 			</result>
-		 </action> 
+		 </action>
+		 <action name="FindPassword" class ="com.wifihi.terminalServerAction.LoginAction" method="findPassword" >
+		 	<result name="success" type="json">
+		 		<param name="root">findPassResult</param>
+		 	</result>
+		 </action>
 	</package>
 </struts>
